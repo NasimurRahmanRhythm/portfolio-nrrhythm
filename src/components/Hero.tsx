@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ArrowDown, Code2, Rocket, Server } from "lucide-react";
+import Image from "next/image";
 
 export default function Hero() {
   const container = useRef(null);
@@ -58,10 +58,10 @@ export default function Hero() {
         "Full-stack Developer",
         "Problem Solver",
       ];
-      let mainTimeline = gsap.timeline({ repeat: -1 });
+      const mainTimeline = gsap.timeline({ repeat: -1 });
 
       words.forEach((word) => {
-        let textTimeline = gsap.timeline({
+        const textTimeline = gsap.timeline({
           repeat: 1,
           yoyo: true,
           repeatDelay: 1.5,
@@ -121,10 +121,13 @@ export default function Hero() {
       <div className="max-w-4xl mx-auto px-6 text-center z-10 relative mt-10">
         <div className="flex flex-col items-center mb-8">
           <div className="w-32 h-32 rounded-full border-4 border-[var(--accent)] overflow-hidden mb-6 shadow-xl transform hover:scale-105 transition-transform duration-300">
-            <img
+            <Image
               src="/assets/profile.jpg"
               alt="Md. Nasimur Rahman Rhythm"
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
+              priority
             />
           </div>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--border)] bg-[var(--bg-card)] shadow-sm">
