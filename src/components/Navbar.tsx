@@ -90,20 +90,21 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-[var(--bg-card)] border-b border-[var(--border)] py-4 px-6 flex flex-col gap-4 shadow-lg">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-[var(--fg)] hover:text-[var(--accent)] py-2 border-b border-[var(--border)]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div
+        id="mobile-menu"
+        className={`md:hidden absolute top-full left-0 w-full bg-[var(--bg-card)] border-b border-[var(--border)] overflow-hidden flex flex-col shadow-lg transition-all duration-300 ease-in-out ${mobileMenuOpen ? "max-h-[500px] py-4" : "max-h-0 py-0"}`}
+      >
+        {navLinks.map((link) => (
+          <Link
+            key={link.name}
+            href={link.href}
+            className="text-[var(--fg)] hover:text-[var(--accent)] py-3 px-6 border-b border-[var(--border)] last:border-0"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {link.name}
+          </Link>
+        ))}
+      </div>
     </nav>
   );
 }

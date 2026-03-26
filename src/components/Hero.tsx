@@ -52,41 +52,68 @@ export default function Hero() {
           "-=0.4",
         );
 
+      // Floating animation for profile picture (different on mobile)
+      const isMobile = window.innerWidth < 768;
+      gsap.to(".profile-container", {
+        y: isMobile ? 15 : 10,
+        x: isMobile ? 5 : 0,
+        rotation: isMobile ? 2 : 0,
+        repeat: -1,
+        yoyo: true,
+        duration: isMobile ? 2.5 : 2,
+        ease: "sine.inOut",
+      });
+
       // Typing Effect
       const words = [
         "Software Engineer",
         "Full-stack Developer",
         "Problem Solver",
       ];
-      const mainTimeline = gsap.timeline({ repeat: -1 });
-
-      words.forEach((word) => {
-        const textTimeline = gsap.timeline({
-          repeat: 1,
-          yoyo: true,
-          repeatDelay: 1.5,
+      
+      let wordIndex = 0;
+      const typeWord = () => {
+        if (!typeTargetRef.current) return;
+        
+        const word = words[wordIndex];
+        const tl = gsap.timeline({
+          onComplete: () => {
+            wordIndex = (wordIndex + 1) % words.length;
+            setTimeout(typeWord, 500);
+          }
         });
 
-        textTimeline.to(
-          {},
-          {
-            duration: word.length * 0.08,
-            onUpdate: function () {
-              if (typeTargetRef.current) {
-                const progress = this.progress();
-                const currentLength = Math.floor(progress * word.length);
-                typeTargetRef.current.textContent = word.substring(
-                  0,
-                  currentLength,
-                );
-              }
-            },
-            ease: "none",
+        // Type in
+        tl.to({}, {
+          duration: word.length * 0.1,
+          onUpdate: function() {
+            if (typeTargetRef.current) {
+              const progress = this.progress();
+              const currentLength = Math.floor(progress * word.length);
+              typeTargetRef.current.textContent = word.substring(0, currentLength);
+            }
           },
-        );
+          ease: "none"
+        });
 
-        mainTimeline.add(textTimeline);
-      });
+        // Pause
+        tl.to({}, { duration: 1.5 });
+
+        // Type out
+        tl.to({}, {
+          duration: word.length * 0.05,
+          onUpdate: function() {
+            if (typeTargetRef.current) {
+              const progress = this.progress();
+              const currentLength = Math.floor((1 - progress) * word.length);
+              typeTargetRef.current.textContent = word.substring(0, currentLength);
+            }
+          },
+          ease: "none"
+        });
+      };
+
+      typeWord();
 
       // Cursor blinking
       gsap.to(".cursor", {
@@ -120,7 +147,7 @@ export default function Hero() {
 
       <div className="max-w-4xl mx-auto px-6 text-center z-10 relative mt-10">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-32 h-32 rounded-full border-4 border-[var(--accent)] overflow-hidden mb-6 shadow-xl transform hover:scale-105 transition-transform duration-300">
+          <div className="profile-container w-32 h-32 rounded-full border-4 border-[var(--accent)] overflow-hidden mb-6 shadow-xl transform transition-transform duration-300">
             <Image
               src="/assets/profile.jpg"
               alt="Md. Nasimur Rahman Rhythm"
@@ -138,10 +165,10 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-4 text-[var(--fg)]">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-4 text-[var(--fg)]">
           <div ref={title1Ref}>
             Hi, I&apos;m{" "}
-            <span className="gradient-text whitespace-nowrap">
+            <span className="gradient-text whitespace-normal md:whitespace-nowrap">
               Md. Nasimur Rahman
             </span>
           </div>
