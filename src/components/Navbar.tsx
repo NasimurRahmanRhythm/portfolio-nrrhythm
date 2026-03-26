@@ -10,8 +10,10 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -67,7 +69,9 @@ export default function Navbar() {
             className="p-2 rounded-full hover:bg-[var(--accent-glow)] transition-colors"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? (
+            {!mounted ? (
+              <div className="w-5 h-5" />
+            ) : theme === "dark" ? (
               <Sun size={20} className="text-yellow-400" />
             ) : (
               <Moon size={20} className="text-indigo-600" />
@@ -81,7 +85,15 @@ export default function Navbar() {
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="p-2 rounded-full hover:bg-[var(--accent-glow)] transition-colors"
           >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {mounted ? (
+              theme === "dark" ? (
+                <Sun size={20} />
+              ) : (
+                <Moon size={20} />
+              )
+            ) : (
+              <div className="w-5 h-5" />
+            )}
           </button>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

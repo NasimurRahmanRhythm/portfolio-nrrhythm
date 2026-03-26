@@ -64,7 +64,7 @@ export default function Contact() {
             </p>
           </div>
           <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Send Email ↗
+            Send Email
           </div>
         </a>
 
@@ -83,7 +83,7 @@ export default function Contact() {
             <p className="text-sm text-[var(--fg-muted)]">Connect with me</p>
           </div>
           <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Visit Profile ↗
+            Visit Profile
           </div>
         </a>
 
@@ -104,7 +104,7 @@ export default function Contact() {
             </p>
           </div>
           <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Visit Profile ↗
+            Visit Profile
           </div>
         </a>
       </div>

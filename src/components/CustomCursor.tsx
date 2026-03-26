@@ -87,7 +87,7 @@ export default function CustomCursor() {
       window.removeEventListener("mouseover", handleHover);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, []);
+  }, [isMobile]);
 
   if (isMobile) return null;
 

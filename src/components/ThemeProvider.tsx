@@ -12,13 +12,9 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark" {...props}>
-      <CustomCursor />
+      {mounted && <CustomCursor />}
       {children}
     </NextThemesProvider>
   );
