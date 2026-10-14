@@ -1,280 +1,162 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  GraduationCap,
-  Trophy,
-  BookOpen,
-  ExternalLink,
-  Languages,
-} from "lucide-react";
+import { useRef } from "react";
+import SectionHead from "./SectionHead";
+import Reveal from "./Reveal";
+import { gsap, useGSAP } from "@/lib/gsap";
 
-gsap.registerPlugin(ScrollTrigger);
+const education = [
+  {
+    school: "Rajshahi University of Engineering & Technology",
+    degree: "BSc in Computer Science and Engineering",
+    date: "01/2018 – 09/2023",
+  },
+  {
+    school: "Dhaka Residential Model College",
+    degree: "HSC in Science",
+    date: "01/2007 – 09/2017",
+  },
+];
+
+const ielts = [
+  { label: "Listening", score: 8.0 },
+  { label: "Reading", score: 7.5 },
+  { label: "Writing", score: 7.5 },
+  { label: "Speaking", score: 7.0 },
+];
+
+const judges = [
+  { name: "Codeforces", handle: "rhythm_1703083", href: "https://codeforces.com/profile/rhythm_1703083", solved: "800+" },
+  { name: "LeetCode", handle: "rhythm_1703083", href: "https://leetcode.com/u/rhythm_1703083/", solved: "100+" },
+  { name: "LightOJ, UVa, HackerRank, Toph", handle: "", href: "", solved: "200+" },
+];
+
+const contests = [
+  { place: "14th", name: "RUET Gyanjam 2019", team: "Ekhon_Kichui_Parina", href: "https://toph.co/c/ruet-gganjam-2019" },
+  { place: "45th", name: "IUT IUPC 2019", team: "RUET_Amra_Olosh", href: "https://toph.co/c/iut-ict-fest-2019" },
+];
 
 export default function Achievements() {
-  const sectionRef = useRef(null);
+  const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".achieve-card",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      // IELTS Bar Animation
+  useGSAP(
+    () => {
       gsap.fromTo(
         ".ielts-bar",
-        { width: 0 },
+        { scaleX: 0 },
         {
-          width: (i, target) => (target as HTMLElement).dataset.width + "%",
-          duration: 1.5,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".ielts-container",
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
+          scaleX: 1,
+          duration: 1.4,
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: { trigger: ".ielts-bars", start: "top 85%" },
         },
       );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    },
+    { scope: root },
+  );
 
   return (
-    <section
-      id="achievements"
-      ref={sectionRef}
-      className="section bg-[var(--bg-card)] border-y border-[var(--border)] relative overflow-hidden"
-    >
-      <h2 className="section-title">Education & Achievements</h2>
-      <div className="section-line"></div>
+    <section id="achievements" ref={root} className="relative px-[var(--margin)] py-28 lg:py-40">
+      <SectionHead index="05" label="Education & Achievements" title="Beyond the" italic="day job" />
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Column 1: Education & Languages */}
-        <div className="space-y-6">
-          <div className="achieve-card card p-8 border-t-4 border-t-[var(--accent)]">
-            <div className="flex items-center gap-3 text-[var(--accent)] mb-4">
-              <GraduationCap size={24} />
-              <h3 className="text-xl font-bold text-[var(--fg)]">Education</h3>
-            </div>
-
-            <div className="mb-4 flex flex-col gap-1">
-              <h4 className="font-bold text-base text-[var(--fg)]">
-                Rajshahi University of Engineering & Technology
-              </h4>
-              <span className="text-xs font-medium text-[var(--fg-muted)] self-start bg-[var(--bg)] px-2 py-0.5 rounded-full border border-[var(--border)]">
-                01/2018 – 09/2023
-              </span>
-              <p className="text-[var(--accent-2)] text-sm font-medium mt-1">
-                BSc in Computer Science and Engineering
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-1 pt-4 border-t border-[var(--border)]/50">
-              <h4 className="font-bold text-base text-[var(--fg)]">
-                Dhaka Residential Model College
-              </h4>
-              <span className="text-xs font-medium text-[var(--fg-muted)] self-start bg-[var(--bg)] px-2 py-0.5 rounded-full border border-[var(--border)]">
-                01/2007 – 09/2017
-              </span>
-              <p className="text-[var(--accent-2)] text-sm font-medium mt-1">
-                HSC in Science
-              </p>
-            </div>
-          </div>
-
-          <div className="achieve-card card p-8 border-t-4 border-t-blue-500 group relative overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <div className="flex items-center gap-3 text-blue-500 mb-6">
-              <Languages size={24} />
-              <h3 className="text-xl font-bold text-[var(--fg)]">
-                IELTS Academic
-              </h3>
-            </div>
-
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <p className="text-sm text-[var(--fg-muted)] mb-1">
-                  Overall Band Score
-                </p>
-                <div className="text-4xl font-black text-[var(--fg)] flex items-baseline gap-1">
-                  7.5{" "}
-                  <span className="text-sm font-medium text-[var(--fg-muted)]">
-                    / 9.0
-                  </span>
-                </div>
-              </div>
-              <div className="px-4 py-2 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm">
-                CEFR C1
-              </div>
-            </div>
-
-            <div className="ielts-container grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
-              {[
-                { label: "Listening", score: 8.0 },
-                { label: "Reading", score: 7.5 },
-                { label: "Writing", score: 7.5 },
-                { label: "Speaking", score: 7.0 },
-              ].map((item) => (
-                <div key={item.label} className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-[var(--fg-muted)] uppercase tracking-wider">
-                      {item.label}
-                    </span>
-                    <span className="text-[var(--fg)]">{item.score}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-[var(--border)] rounded-full overflow-hidden">
-                    <div
-                      className="ielts-bar h-full bg-blue-500 rounded-full"
-                      data-width={(item.score / 9) * 100}
-                      style={{ width: 0 }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="grid gap-16 lg:grid-cols-12">
+        {/* Education */}
+        <div className="lg:col-span-6">
+          <p className="t-label mb-6 text-muted">Education</p>
+          <Reveal as="ul" className="border-t border-line">
+            {education.map((e) => (
+              <li key={e.school} className="border-b border-line py-6">
+                <p className="t-label mb-2 text-accent">{e.date}</p>
+                <h3 className="t-h5">{e.school}</h3>
+                <p className="mt-1 text-muted">{e.degree}</p>
+              </li>
+            ))}
+          </Reveal>
         </div>
 
-        {/* Column 2: Programming, Contests & Publications */}
-        <div className="space-y-6">
-          <div className="achieve-card card p-8 bg-[var(--bg)] border-none">
-            <div className="flex items-center gap-3 text-[var(--accent)] mb-6">
-              <Trophy size={20} />
-              <h3 className="text-lg font-bold text-[var(--fg)]">
-                Programming & Contests
-              </h3>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-bold text-base text-[var(--fg)] mb-3 border-b border-[var(--border)] pb-2 inline-block">
-                  Online Judge Statistics
-                </h4>
-                <ul className="space-y-2">
-                  <li className="flex gap-3 text-sm text-[var(--fg-muted)]">
-                    <span className="text-[var(--accent)] mt-1">▹</span>
-                    <span>
-                      <strong>Codeforces:</strong>{" "}
-                      <a
-                        href="https://codeforces.com/profile/rhythm_1703083"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[var(--accent)] hover:underline transition-colors"
-                      >
-                        rhythm_1703083
-                      </a>{" "}
-                      — solved 800+ problems
-                    </span>
-                  </li>
-                  <li className="flex gap-3 text-sm text-[var(--fg-muted)]">
-                    <span className="text-[var(--accent)] mt-1">▹</span>
-                    <span>
-                      <strong>Leetcode:</strong>{" "}
-                      <a
-                        href="https://leetcode.com/u/rhythm_1703083/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[var(--accent)] hover:underline transition-colors"
-                      >
-                        rhythm_1703083
-                      </a>{" "}
-                      — solved 100+ problems
-                    </span>
-                  </li>
-                  <li className="flex gap-3 text-sm text-[var(--fg-muted)]">
-                    <span className="text-[var(--accent)] mt-1">▹</span>
-                    <span>
-                      <strong>Others:</strong> LightOj, UVA, HackerRank, Toph,
-                      etc. — solved 200+ problems
-                    </span>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-base text-[var(--fg)] mb-3 border-b border-[var(--border)] pb-2 inline-block">
-                  Contests Experience
-                </h4>
-                <ul className="space-y-2">
-                  <li className="flex gap-3 text-sm text-[var(--fg-muted)]">
-                    <div className="w-1 h-1 rounded-full bg-[var(--accent-2)] mt-2 shrink-0"></div>
-                    <span>
-                      14th in RUET Gyanjam 2019 (Team name:{" "}
-                      <a
-                        href="https://toph.co/c/ruet-gganjam-2019"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[var(--accent-2)] hover:underline transition-colors font-medium"
-                      >
-                        Ekhon_Kichui_Parina
-                      </a>
-                      )
-                    </span>
-                  </li>
-                  <li className="flex gap-3 text-sm text-[var(--fg-muted)]">
-                    <div className="w-1 h-1 rounded-full bg-[var(--accent-2)] mt-2 shrink-0"></div>
-                    <span>
-                      45th in IUT IUPC 2019 (Team name:{" "}
-                      <a
-                        href="https://toph.co/c/iut-ict-fest-2019"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[var(--accent-2)] hover:underline transition-colors font-medium"
-                      >
-                        RUET_Amra_Olosh
-                      </a>
-                      )
-                    </span>
-                  </li>
-                </ul>
-              </div>
+        {/* IELTS */}
+        <div className="lg:col-span-5 lg:col-start-8">
+          <p className="t-label mb-6 text-muted">IELTS Academic</p>
+          <div className="flex items-end justify-between gap-6 border-t border-line pt-6">
+            <p className="font-display text-[clamp(5rem,10vw,9rem)] leading-[0.8] tracking-tight">7.5</p>
+            <div className="text-right">
+              <p className="t-label text-muted">Overall band / 9.0</p>
+              <p className="t-h5 mt-2 italic text-accent">CEFR C1</p>
             </div>
           </div>
+          <ul className="ielts-bars mt-10 space-y-5">
+            {ielts.map((item) => (
+              <li key={item.label}>
+                <div className="t-label mb-2 flex justify-between">
+                  <span className="text-muted">{item.label}</span>
+                  <span>{item.score.toFixed(1)}</span>
+                </div>
+                <div className="h-px w-full bg-line">
+                  <div
+                    className="ielts-bar h-px origin-left bg-accent"
+                    style={{ width: `${(item.score / 9) * 100}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="achieve-card card p-8 border-t-4 border-t-[var(--accent-2)] group relative overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <div className="flex items-center gap-3 text-[var(--accent-2)] mb-4">
-              <BookOpen size={24} />
-              <h3 className="text-lg font-bold text-[var(--fg)]">
-                Publications
-              </h3>
-            </div>
+        {/* Problem solving */}
+        <div className="lg:col-span-6">
+          <p className="t-label mb-6 text-muted">Competitive programming</p>
+          <Reveal as="ul" className="border-t border-line">
+            {judges.map((j) => (
+              <li key={j.name} className="flex items-baseline justify-between gap-6 border-b border-line py-5">
+                <div>
+                  <h3 className="t-h5">{j.name}</h3>
+                  {j.href && (
+                    <a href={j.href} target="_blank" rel="noopener noreferrer" className="t-label link-u text-muted">
+                      {j.handle} ↗
+                    </a>
+                  )}
+                </div>
+                <p className="font-display text-4xl tracking-tight">
+                  {j.solved}
+                  <span className="t-label ml-2 text-muted">solved</span>
+                </p>
+              </li>
+            ))}
+            {contests.map((c) => (
+              <li key={c.name} className="flex items-baseline justify-between gap-6 border-b border-line py-5">
+                <div>
+                  <h3 className="t-h5">{c.name}</h3>
+                  <a href={c.href} target="_blank" rel="noopener noreferrer" className="t-label link-u text-muted">
+                    Team {c.team} ↗
+                  </a>
+                </div>
+                <p className="font-display text-4xl italic tracking-tight text-accent">{c.place}</p>
+              </li>
+            ))}
+          </Reveal>
+        </div>
 
-            <h4 className="font-bold text-[var(--fg)] text-sm leading-relaxed mb-2 pr-4">
-              Predicting Football Match Results: An Analysis of Feature
-              Selection and Machine Learning Techniques Using a Curated Dataset
-            </h4>
-            <div className="text-xs text-[var(--fg-muted)] flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              Published Research
-            </div>
-
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center bg-[var(--fg)]/5 backdrop-blur-[1px]">
-              <a
-                href="https://ieeexplore.ieee.org/abstract/document/10800599"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-[var(--accent-2)] text-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl hover:bg-[var(--accent)]"
-                aria-label="View Publication"
-              >
-                <ExternalLink size={24} />
-              </a>
-            </div>
-          </div>
+        {/* Publication */}
+        <div className="lg:col-span-5 lg:col-start-8">
+          <p className="t-label mb-6 text-muted">Publication</p>
+          <a
+            href="https://ieeexplore.ieee.org/abstract/document/10800599"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-2xl border border-line bg-surface p-8 transition-colors duration-500 hover:border-accent"
+          >
+            <p className="t-label mb-6 flex items-center gap-2 text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> IEEE Xplore · Published research
+            </p>
+            <h3 className="t-h3">
+              Predicting Football Match Results: An Analysis of Feature Selection and Machine Learning Techniques
+              Using a Curated Dataset
+            </h3>
+            <p className="t-label mt-8 text-accent transition-transform duration-500 group-hover:translate-x-2">
+              Read the paper ↗
+            </p>
+          </a>
         </div>
       </div>
     </section>

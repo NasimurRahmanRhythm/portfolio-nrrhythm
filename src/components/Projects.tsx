@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink, Code, FolderGit2 } from "lucide-react";
+import SectionHead from "./SectionHead";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -87,10 +88,9 @@ export default function Projects() {
     <section
       id="projects"
       ref={sectionRef}
-      className="section bg-[var(--bg)] relative overflow-hidden"
+      className="relative overflow-hidden px-[var(--margin)] py-28 lg:py-40"
     >
-      <h2 className="section-title">Featured Projects</h2>
-      <div className="section-line"></div>
+      <SectionHead index="04" label="Projects" title="Selected" italic="work" />
 
       <div className="grid md:grid-cols-2 gap-8">
         {projects.map((project, idx) => (

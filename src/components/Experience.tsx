@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Briefcase, Calendar } from "lucide-react";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useRef } from "react";
+import SectionHead from "./SectionHead";
+import { gsap, useGSAP } from "@/lib/gsap";
 
 const experiences = [
   {
@@ -51,123 +48,80 @@ const experiences = [
 ];
 
 export default function Experience() {
-  const sectionRef = useRef(null);
+  const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Timeline line animation
+  useGSAP(
+    () => {
+      // The progress rail fills as the roles scroll past.
       gsap.fromTo(
-        ".timeline-line",
-        { height: 0 },
+        ".exp-rail",
+        { scaleY: 0 },
         {
-          height: "100%",
+          scaleY: 1,
           ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 60%",
-            end: "bottom 80%",
-            scrub: 1,
-          },
+          scrollTrigger: { trigger: ".exp-list", start: "top 70%", end: "bottom 70%", scrub: true },
         },
       );
-
-      // Experience cards animation
-      gsap.utils.toArray(".exp-card").forEach((card: unknown, i) => {
-        const cardElem = card as HTMLElement;
-        // Alternate slide in from left/right based on index (even = left, odd = right)
-        // For mobile, always slide up
-        const isDesktop = window.innerWidth > 768;
-        const xOffset = isDesktop ? (i % 2 === 0 ? -50 : 50) : 0;
-        const yOffset = isDesktop ? 0 : 50;
-
-        gsap.fromTo(
-          cardElem,
-          { x: xOffset, y: yOffset, opacity: 0 },
-          {
-            x: 0,
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: cardElem,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          },
-        );
+      gsap.utils.toArray<HTMLElement>(".exp-row").forEach((row) => {
+        gsap.from(row, {
+          y: 50,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: row, start: "top 85%" },
+        });
       });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    },
+    { scope: root },
+  );
 
   return (
-    <section
-      id="experience"
-      ref={sectionRef}
-      className="section bg-[var(--bg-card)] border-y border-[var(--border)] relative"
-    >
-      <h2 className="section-title">Work Experience</h2>
-      <div className="section-line"></div>
+    <section id="experience" ref={root} className="relative bg-surface px-[var(--margin)] py-28 lg:py-40">
+      <SectionHead index="03" label="Experience" title="Four roles," italic="one company" />
 
-      <div className="relative mt-12 md:mt-20">
-        {/* Vertical Timeline Line (Desktop only) */}
-        <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-[var(--border)] -translate-x-1/2">
-          <div className="timeline-line w-full bg-gradient-to-b from-[var(--accent)] to-[var(--accent-2)] origin-top"></div>
-        </div>
+      <div className="grid gap-12 lg:grid-cols-12">
+        {/* Sticky summary of the path from intern to engineer */}
+        <aside className="lg:col-span-3">
+          <div className="lg:sticky lg:top-28">
+            <p className="t-h3">{experiences[0].company}</p>
+            <p className="mt-3 text-muted">
+              From intern to Software Engineer I, growing with the team since {experiences[experiences.length - 1].date.split(" – ")[0]}.
+            </p>
+            <ol className="t-label mt-8 space-y-2 text-muted">
+              {[...experiences].reverse().map((exp) => (
+                <li key={exp.role} className="flex items-center gap-3">
+                  <span className="h-px w-6 bg-accent" />
+                  {exp.role}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </aside>
 
-        <div className="flex flex-col gap-12">
-          {experiences.map((exp, idx) => (
-            <div
-              key={idx}
-              className={`relative flex flex-col md:flex-row gap-8 items-center ${idx % 2 === 0 ? "md:flex-row-reverse" : ""}`}
-            >
-              {/* Timeline Dot (Desktop only) */}
-              <div className="hidden md:flex absolute left-1/2 top-8 -translate-x-1/2 w-10 h-10 rounded-full bg-[var(--bg-card)] border-4 border-[var(--border)] z-10 items-center justify-center transition-colors duration-300">
-                <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+        <div className="exp-list relative lg:col-span-8 lg:col-start-5">
+          <span className="absolute left-0 top-0 hidden h-full w-px bg-line md:block" />
+          <span className="exp-rail absolute left-0 top-0 hidden h-full w-px origin-top bg-accent md:block" />
+
+          {experiences.map((exp, i) => (
+            <article key={exp.role} className="exp-row relative border-b border-line pb-12 pt-2 md:pl-12 [&:not(:first-child)]:pt-12">
+              <span
+                className={`absolute -left-[5px] hidden h-[11px] w-[11px] rounded-full border border-accent bg-surface md:block ${
+                  i === 0 ? "top-6" : "top-[4.5rem]"
+                }`}
+              />
+              <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+                <h3 className="t-h3">{exp.role}</h3>
+                <span className="t-label text-muted">{exp.date}</span>
               </div>
-
-              {/* Content Card */}
-              <div className="w-full md:w-1/2">
-                <div
-                  className={`exp-card card p-8 relative ${idx % 2 === 0 ? "md:mr-12" : "md:ml-12"}`}
-                >
-                  {/* Small pointer triangle */}
-                  <div
-                    className={`hidden md:block absolute top-10 w-4 h-4 bg-[var(--bg-card)] border-t border-l border-[var(--border)] rotate-45 ${idx % 2 === 0 ? "-right-2 border-l-0 border-b" : "-left-2 border-r-0 border-b-0"}`}
-                  ></div>
-
-                  <div className="flex items-center gap-3 text-[var(--accent)] mb-2 font-semibold">
-                    <Briefcase size={18} />
-                    <span>{exp.company}</span>
-                  </div>
-
-                  <h3 className="text-xl font-bold mb-1 text-[var(--fg)]">
-                    {exp.role}
-                  </h3>
-
-                  <div className="flex items-center gap-2 text-sm text-[var(--fg-muted)] mb-6 font-medium">
-                    <Calendar size={14} />
-                    <span>{exp.date}</span>
-                  </div>
-
-                  <ul className="space-y-3">
-                    {exp.bullets.map((bullet, bIdx) => (
-                      <li
-                        key={bIdx}
-                        className="text-[var(--fg-muted)] leading-relaxed text-sm flex gap-3"
-                      >
-                        <span className="text-[var(--accent)] mt-1.5 opacity-60">
-                          ▹
-                        </span>
-                        <span className="flex-1">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
+              <ul className="space-y-3">
+                {exp.bullets.map((bullet) => (
+                  <li key={bullet} className="flex gap-4 text-muted">
+                    <span className="mt-3 h-px w-4 shrink-0 bg-accent" />
+                    <span className="flex-1 leading-relaxed">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
           ))}
         </div>
       </div>

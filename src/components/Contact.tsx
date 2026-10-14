@@ -1,113 +1,106 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Mail, Code, AppWindow } from "lucide-react";
+import { useRef } from "react";
+import SplitTitle from "./SplitTitle";
+import Reveal from "./Reveal";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { site, socials } from "@/lib/site";
 
-gsap.registerPlugin(ScrollTrigger);
+// Round button that leans toward the pointer while it hovers nearby.
+function MagneticLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const ref = useRef<HTMLAnchorElement>(null);
 
-export default function Contact() {
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".contact-item",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-
+  useGSAP(() => {
+    const el = ref.current;
+    if (!el || !window.matchMedia("(pointer: fine)").matches) return;
+    const xTo = gsap.quickTo(el, "x", { duration: 0.6, ease: "power3" });
+    const yTo = gsap.quickTo(el, "y", { duration: 0.6, ease: "power3" });
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      xTo((e.clientX - (r.left + r.width / 2)) * 0.35);
+      yTo((e.clientY - (r.top + r.height / 2)) * 0.35);
+    };
+    const leave = () => {
+      xTo(0);
+      yTo(0);
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerleave", leave);
+    return () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerleave", leave);
+    };
+  });
 
   return (
-    <section
-      id="contact"
-      ref={sectionRef}
-      className="section bg-[var(--bg)] relative"
+    <a
+      ref={ref}
+      href={href}
+      className="t-label flex h-36 w-36 shrink-0 items-center justify-center rounded-full bg-accent text-center text-bone transition-colors duration-500 hover:bg-fg hover:text-bg lg:h-44 lg:w-44"
     >
-      <h2 className="section-title text-center">Get In Touch</h2>
-      <div className="section-line mx-auto mb-12"></div>
+      {children}
+    </a>
+  );
+}
 
-      <p className="text-center text-[var(--fg-muted)] max-w-2xl mx-auto mb-12 text-lg">
-        Whether you have a question, a project opportunity, or just want to say
-        hi, I&apos;ll try my best to get back to you!
+export default function Contact() {
+  return (
+    <section id="contact" className="grain relative overflow-hidden px-[var(--margin)] py-28 lg:py-40">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at 20% 80%, var(--accent-glow), transparent 55%)" }}
+      />
+
+      <p className="t-label relative mb-10 text-muted">
+        <span className="text-accent">(06)</span> Contact
       </p>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-        {/* Email */}
-        <a 
-          href="mailto:rhythm4538@gmail.com"
-          className="contact-item card p-6 text-center flex flex-col items-center gap-4 group hover:-translate-y-2 transition-transform"
-        >
-          <div className="w-14 h-14 rounded-full bg-[var(--accent-glow)] text-[var(--accent)] flex items-center justify-center group-hover:bg-[var(--accent)] group-hover:text-white transition-colors">
-            <Mail size={28} />
-          </div>
-          <div>
-            <h3 className="font-bold text-[var(--fg)] mb-1">Email</h3>
-            <p className="text-sm text-[var(--fg-muted)] break-all px-2">
-              rhythm4538@gmail.com
-            </p>
-          </div>
-          <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Send Email
-          </div>
-        </a>
+      <h2 className="relative">
+        <SplitTitle text="Let's build" className="block font-display text-[clamp(3.4rem,11vw,12rem)] leading-[0.86] tracking-[-0.045em]" />
+        <span className="ml-[0.5em] block">
+          <SplitTitle
+            text="something."
+            className="font-serif text-[clamp(3.4rem,11vw,12rem)] italic leading-[0.86] tracking-[-0.03em] text-accent"
+            delay={0.1}
+          />
+        </span>
+      </h2>
 
-        {/* LinkedIn */}
-        <a
-          href="https://www.linkedin.com/in/md-nasimur-rahman-rhythm/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="contact-item card p-6 text-center flex flex-col items-center gap-4 group hover:-translate-y-2 transition-transform"
-        >
-          <div className="w-14 h-14 rounded-full bg-[var(--accent-glow)] text-[var(--accent)] flex items-center justify-center group-hover:bg-[#0077B5] group-hover:text-white transition-colors">
-            <AppWindow size={28} />
-          </div>
-          <div>
-            <h3 className="font-bold text-[var(--fg)] mb-1">LinkedIn</h3>
-            <p className="text-sm text-[var(--fg-muted)]">Connect with me</p>
-          </div>
-          <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Visit Profile
-          </div>
-        </a>
+      <Reveal className="relative mt-16 grid items-center gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <p className="t-h5 max-w-lg text-muted">
+            Whether you have a question, a project or a role in mind, or just want to say hi, my inbox is open. I&apos;ll
+            get back to you as soon as I can.
+          </p>
+          <a href={`mailto:${site.email}`} className="t-h3 link-u mt-8 inline-block break-all">
+            {site.email}
+          </a>
+        </div>
 
-        {/* GitHub */}
-        <a
-          href="https://github.com/NasimurRahmanRhythm"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="contact-item card p-6 text-center flex flex-col items-center gap-4 group hover:-translate-y-2 transition-transform"
-        >
-          <div className="w-14 h-14 rounded-full bg-[var(--accent-glow)] text-[var(--accent)] flex items-center justify-center group-hover:bg-[#333] group-hover:text-white transition-colors">
-            <Code size={28} />
-          </div>
-          <div>
-            <h3 className="font-bold text-[var(--fg)] mb-1">GitHub</h3>
-            <p className="text-sm text-[var(--fg-muted)]">
-              View my repositories
-            </p>
-          </div>
-          <div className="mt-auto pt-2 text-xs font-medium text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">
-            Visit Profile
-          </div>
-        </a>
-      </div>
+        <ul className="lg:col-span-3 lg:col-start-8">
+          {socials.map((s) => (
+            <li key={s.name} className="border-b border-line">
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between py-4 transition-colors hover:text-accent"
+              >
+                <span className="t-h5">{s.name}</span>
+                <span className="transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex lg:col-span-2 lg:col-start-11 lg:justify-end">
+          <MagneticLink href={`mailto:${site.email}`}>
+            Say
+            <br />
+            hello
+          </MagneticLink>
+        </div>
+      </Reveal>
     </section>
   );
 }

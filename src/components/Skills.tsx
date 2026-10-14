@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import SectionHead from "./SectionHead";
+import Reveal from "./Reveal";
 
 const skillCategories = [
   {
@@ -36,86 +33,42 @@ const skillCategories = [
 ];
 
 export default function Skills() {
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Stagger animate skill categories
-      gsap.fromTo(
-        ".skill-category",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 75%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-
-      // Stagger animate individual skill tags inside each category
-      gsap.utils.toArray(".skill-category").forEach((category: unknown) => {
-        const catElem = category as HTMLElement;
-        const tags = catElem.querySelectorAll(".skill-tag");
-
-        gsap.fromTo(
-          tags,
-          { scale: 0.8, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.4,
-            stagger: 0.05,
-            ease: "back.out(1.5)",
-            scrollTrigger: {
-              trigger: catElem,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          },
-        );
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const all = skillCategories.flatMap((c) => c.skills);
 
   return (
-    <section
-      id="skills"
-      ref={sectionRef}
-      className="section bg-[var(--bg)] relative overflow-hidden"
-    >
-      <h2 className="section-title">Technical Skills</h2>
-      <div className="section-line"></div>
-
-      <div className="grid md:grid-cols-2 gap-8">
-        {skillCategories.map((category, idx) => (
-          <div key={idx} className="skill-category card p-8 h-full">
-            <h3 className="text-xl font-bold mb-6 text-[var(--fg)] flex items-center gap-3">
-              <span className="w-8 h-8 rounded bg-[var(--accent-glow)] text-[var(--accent)] flex items-center justify-center text-sm font-black">
-                0{idx + 1}
-              </span>
-              {category.title}
-            </h3>
-
-            <div className="flex flex-wrap gap-3">
-              {category.skills.map((skill, sIdx) => (
-                <span
-                  key={sIdx}
-                  className="skill-tag tag bg-[var(--bg)] border border-[var(--border)] text-[var(--fg)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:-translate-y-1 transition-all cursor-default"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
+    <section id="skills" className="relative overflow-hidden py-28 lg:py-40">
+      <div className="px-[var(--margin)]">
+        <SectionHead index="02" label="Skills" title="Tools I" italic="build with" />
       </div>
+
+      <div className="mb-20 overflow-hidden border-y border-line py-6" aria-hidden="true">
+        <div className="marquee">
+          {[...all, ...all].map((skill, i) => (
+            <span key={i} className="flex items-center whitespace-nowrap px-6 font-serif text-4xl italic text-muted lg:text-6xl">
+              {skill}
+              <span className="ml-12 h-2 w-2 rounded-full bg-accent" />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <Reveal as="ul" className="border-t border-line px-[var(--margin)]">
+        {skillCategories.map((category, i) => (
+          <li key={category.title} className="grid gap-4 border-b border-line py-8 lg:grid-cols-12 lg:py-10">
+            <div className="lg:col-span-3">
+              <p className="t-label text-accent">0{i + 1}</p>
+              <h3 className="t-h5 mt-2">{category.title}</h3>
+            </div>
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 lg:col-span-9">
+              {category.skills.map((skill) => (
+                <li key={skill} className="t-h3 text-muted transition-colors duration-300 hover:text-fg">
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </Reveal>
     </section>
   );
 }
