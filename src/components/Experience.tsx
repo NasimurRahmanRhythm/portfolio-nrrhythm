@@ -1,15 +1,28 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import SectionHead from "./SectionHead";
 import { gsap, useGSAP } from "@/lib/gsap";
 
-const experiences = [
+type Role = {
+  role: string;
+  company: string;
+  date: string;
+  bullets: string[];
+  link?: { label: string; href: string };
+};
+
+const experiences: Role[] = [
   {
     role: "Software Engineer I",
     company: "ShellBeeHaken Ltd.",
     date: "Jan 2025 – Present",
+    link: { label: "Read the Kriya AI case study", href: "/projects/kriya-ai" },
     bullets: [
+      "Building Kriya AI, a GenAI marketing co-pilot: designed a central, versioned prompt registry for brand-aware text, image, video and carousel generation on Google Vertex AI (Gemini, Gemini Image, Veo).",
+      "Hardened LLM output with schema-enforced JSON, Zod validation and repair, prompt-injection sanitization and versioned prompt-performance tracking; cut AI spend by removing a redundant LLM-judge layer and added per-generation model tracking with an AI cost dashboard.",
+      "Re-architected a 700-line social sync endpoint into modular Facebook, Instagram, YouTube and TikTok services, fixed an engagement-rate formula that reported 500% instead of 5%, and built the Recharts analytics dashboard.",
       "Led development of production-ready frontend and backend features using Next.js, Node.js, GraphQL, and MongoDB.",
       "Integrated an AI-powered persona chatbot with agentic and RAG capabilities.",
       "Integrated and maintained Stripe-based payment systems for subscription management and individual/company ID verification.",
@@ -121,6 +134,11 @@ export default function Experience() {
                   </li>
                 ))}
               </ul>
+              {exp.link && (
+                <Link href={exp.link.href} className="t-label link-u mt-8 inline-block text-accent">
+                  {exp.link.label} →
+                </Link>
+              )}
             </article>
           ))}
         </div>

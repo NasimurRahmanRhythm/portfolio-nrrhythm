@@ -6,29 +6,42 @@ import Reveal from "./Reveal";
 const skillCategories = [
   {
     title: "Languages",
-    skills: ["JavaScript", "TypeScript", "C/C++", "Java", "Python"],
+    skills: ["JavaScript", "TypeScript", "Python", "C/C++", "Java"],
   },
   {
-    title: "Web Technologies",
+    title: "Frontend",
     skills: [
       "React",
       "Next.js",
-      "Node.js",
-      "Express.js",
-      "React Native",
-      "Stripe",
+      "React Native (Expo)",
       "Tailwind CSS",
-      "Socket.IO",
-      "React GSAP",
+      "Zustand",
+      "i18next",
+      "GSAP",
+      "Three.js / React Three Fiber",
+      "Motion",
+      "Recharts",
     ],
   },
   {
+    title: "Backend & APIs",
+    skills: ["Node.js", "Express.js", "GraphQL", "REST", "Socket.IO", "Zod"],
+  },
+  {
+    title: "AI & LLMs",
+    skills: ["Google Vertex AI", "Gemini", "Veo", "LangChain", "LangGraph", "RAG chatbots", "Prompt engineering"],
+  },
+  {
     title: "Databases",
-    skills: ["MongoDB", "MySQL", "PostgreSQL", "Redis"],
+    skills: ["PostgreSQL", "Supabase", "MongoDB", "MySQL", "Redis"],
+  },
+  {
+    title: "Payments & Integrations",
+    skills: ["Stripe", "SSLCommerz", "Meta Graph API", "YouTube Data API", "TikTok API", "Cloudinary"],
   },
   {
     title: "Cloud & Tools",
-    skills: ["AWS Lambda", "Kubernetes", "Git", "Firebase"],
+    skills: ["AWS Lambda", "AWS Elastic Beanstalk", "Vercel", "Kubernetes", "Firebase", "Git", "Vitest"],
   },
 ];
 
