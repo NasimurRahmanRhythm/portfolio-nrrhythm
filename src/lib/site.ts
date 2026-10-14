@@ -13,6 +13,9 @@ export const socials = [
   { name: "LinkedIn", href: "https://www.linkedin.com/in/md-nasimur-rahman-rhythm/" },
 ];
 
+// In-page anchors on the home page, full links everywhere else.
+export const sectionHref = (pathname: string, hash: string) => (pathname === "/" ? hash : `/${hash}`);
+
 export const nav = [
   { name: "About", href: "#about" },
   { name: "Skills", href: "#skills" },

@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import SmoothScroll from "@/components/SmoothScroll";
 import Preloader from "@/components/Preloader";
 import Cursor from "@/components/Cursor";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const bodoni = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni", display: "swap" });
 const instrument = Instrument_Serif({
@@ -50,7 +52,9 @@ export default function RootLayout({
           <SmoothScroll>
             <Preloader />
             <Cursor />
-            {children}
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
           </SmoothScroll>
         </ThemeProvider>
       </body>

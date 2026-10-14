@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
@@ -10,6 +11,7 @@ export const useLenis = () => useContext(LenisContext);
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const [lenis, setLenis] = useState<Lenis | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -47,6 +49,22 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       observer.disconnect();
     };
   }, []);
+
+  // New route: jump to the top (or to the hash) and re-measure triggers.
+  useEffect(() => {
+    const hash = window.location.hash;
+    const id = window.setTimeout(() => {
+      const target = hash ? document.querySelector(hash) : null;
+      if (target) {
+        if (lenis) lenis.scrollTo(target as HTMLElement, { immediate: true, offset: -64 });
+        else target.scrollIntoView();
+      } else if (lenis) {
+        lenis.scrollTo(0, { immediate: true });
+      }
+      ScrollTrigger.refresh();
+    }, 60);
+    return () => window.clearTimeout(id);
+  }, [pathname, lenis]);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }

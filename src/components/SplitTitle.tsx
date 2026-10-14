@@ -51,9 +51,15 @@ export default function SplitTitle({ text, className = "", when = "scroll", dela
   return (
     <span ref={root} className={`split-word ${className}`}>
       <span className="sr-only">{text}</span>
-      {text.split("").map((char, i) => (
-        <span key={i} className="split-mask" aria-hidden="true">
-          <span className="split-char">{char}</span>
+      {text.split(" ").map((word, w, words) => (
+        <span key={w} className="split-group" aria-hidden="true">
+          {word.split("").map((char, i) => (
+            <span key={i} className="split-mask">
+              <span className="split-char">{char}</span>
+            </span>
+          ))}
+          {/* Flex drops plain whitespace, so the gap between words is a no-break space. */}
+          {w < words.length - 1 && "\u00a0"}
         </span>
       ))}
     </span>

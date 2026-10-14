@@ -222,6 +222,12 @@ html.lenis body {
 /* Split characters: each char sits in a clipping mask and slides up */
 .split-word {
   display: inline-flex;
+  flex-wrap: wrap;
+}
+
+/* One word; titles wrap between words, never inside one. */
+.split-group {
+  display: inline-flex;
   white-space: pre;
 }
 

@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useLenis } from "./SmoothScroll";
-import { nav, site, socials } from "@/lib/site";
+import { nav, sectionHref, site, socials } from "@/lib/site";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -48,6 +49,7 @@ function LocalTime() {
 
 export default function Navbar() {
   const lenis = useLenis();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -80,6 +82,8 @@ export default function Navbar() {
     else lenis.start();
   }, [open, lenis]);
 
+  useEffect(() => setOpen(false), [pathname]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
@@ -105,7 +109,7 @@ export default function Navbar() {
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
             {nav.map((link, i) => (
-              <a key={link.href} href={link.href} className="t-label link-u pb-0.5 text-muted transition-colors hover:text-fg">
+              <a key={link.href} href={sectionHref(pathname, link.href)} className="t-label link-u pb-0.5 text-muted transition-colors hover:text-fg">
                 <span className="text-accent">0{i + 1}</span> {link.name}
               </a>
             ))}
@@ -115,7 +119,7 @@ export default function Navbar() {
             <LocalTime />
             <ThemeToggle />
             <a
-              href="#contact"
+              href={sectionHref(pathname, "#contact")}
               className="t-label hidden rounded-full bg-fg px-4 py-2.5 text-bg transition-colors hover:bg-accent hover:text-bone sm:block"
             >
               Let&apos;s talk
@@ -157,7 +161,7 @@ export default function Navbar() {
           {nav.map((link, i) => (
             <a
               key={link.href}
-              href={link.href}
+              href={sectionHref(pathname, link.href)}
               onClick={() => setOpen(false)}
               className="flex items-baseline gap-4 border-b border-line py-4 font-serif text-5xl leading-none"
             >

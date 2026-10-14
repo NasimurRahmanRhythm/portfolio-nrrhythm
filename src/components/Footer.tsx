@@ -1,10 +1,12 @@
 "use client";
 
 import { useLenis } from "./SmoothScroll";
-import { nav, site, socials } from "@/lib/site";
+import { usePathname } from "next/navigation";
+import { nav, sectionHref, site, socials } from "@/lib/site";
 
 export default function Footer() {
   const lenis = useLenis();
+  const pathname = usePathname();
   const year = new Date().getFullYear();
 
   const toTop = () => {
@@ -27,7 +29,7 @@ export default function Footer() {
           <ul className="space-y-2">
             {nav.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="link-u">
+                <a href={sectionHref(pathname, link.href)} className="link-u">
                   {link.name}
                 </a>
               </li>
