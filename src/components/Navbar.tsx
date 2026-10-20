@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useLenis } from "./SmoothScroll";
@@ -81,11 +80,6 @@ export default function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between gap-6 px-[var(--margin)] py-4">
-          <Link href="/" aria-label={`${site.name}, home`} className="font-serif text-2xl leading-none">
-            {site.short}
-            <span className="text-accent">.</span>
-          </Link>
-
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
             {nav.map((link, i) => (
               <a key={link.href} href={sectionHref(pathname, link.href)} className="t-label link-u pb-0.5 text-muted transition-colors hover:text-fg">
@@ -94,7 +88,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
             <a
               href={sectionHref(pathname, "#contact")}

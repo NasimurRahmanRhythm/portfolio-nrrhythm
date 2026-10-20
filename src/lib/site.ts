@@ -1,6 +1,5 @@
 export const site = {
   name: "Md. Nasimur Rahman",
-  short: "Rhythm",
   role: "Software Engineer",
   location: "Dhaka, Bangladesh",
   email: "rhythm4538@gmail.com",
