@@ -26,27 +26,6 @@ function ThemeToggle() {
   );
 }
 
-function LocalTime() {
-  const [time, setTime] = useState("");
-  useEffect(() => {
-    const format = () =>
-      setTime(
-        new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: site.timeZone }).format(
-          new Date(),
-        ),
-      );
-    format();
-    const id = window.setInterval(format, 30_000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return (
-    <span className="t-label hidden text-muted xl:block">
-      Dhaka <span className="tabular-nums text-fg">{time || "--:--"}</span>
-    </span>
-  );
-}
-
 export default function Navbar() {
   const lenis = useLenis();
   const pathname = usePathname();
@@ -116,7 +95,6 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <LocalTime />
             <ThemeToggle />
             <a
               href={sectionHref(pathname, "#contact")}

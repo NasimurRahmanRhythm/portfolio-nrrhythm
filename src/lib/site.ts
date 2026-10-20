@@ -3,7 +3,6 @@ export const site = {
   short: "Rhythm",
   role: "Software Engineer",
   location: "Dhaka, Bangladesh",
-  timeZone: "Asia/Dhaka",
   email: "rhythm4538@gmail.com",
   resume: "/assets/resume.pdf",
 };

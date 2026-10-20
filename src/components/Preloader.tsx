@@ -9,7 +9,6 @@ const SEEN = "preloader-seen";
 
 export default function Preloader() {
   const root = useRef<HTMLDivElement>(null);
-  const count = useRef<HTMLSpanElement>(null);
   const [done, setDone] = useState(false);
 
   useGSAP(
@@ -27,22 +26,9 @@ export default function Preloader() {
         return;
       }
 
-      const state = { v: 0 };
       gsap
         .timeline({ onComplete: () => setDone(true) })
         .from(".pl-line > span", { yPercent: 110, duration: 0.9, stagger: 0.08, ease: "power3.out" })
-        .to(
-          state,
-          {
-            v: 100,
-            duration: 1.6,
-            ease: "power2.inOut",
-            onUpdate: () => {
-              if (count.current) count.current.textContent = String(Math.round(state.v)).padStart(3, "0");
-            },
-          },
-          0,
-        )
         .to(".pl-bar", { scaleX: 1, duration: 1.6, ease: "power2.inOut" }, 0)
         .to(".pl-line > span", { yPercent: -110, duration: 0.6, stagger: 0.05, ease: "power3.in" }, "+=0.1")
         .add(() => setReady())
@@ -71,13 +57,8 @@ export default function Preloader() {
           <span className="font-serif italic">Rahman</span>
         </span>
       </div>
-      <div className="flex items-end justify-between gap-6">
-        <div className="relative h-px flex-1 bg-bone/15">
-          <span className="pl-bar absolute inset-0 origin-left scale-x-0 bg-bone" />
-        </div>
-        <span ref={count} className="t-h5 tabular-nums">
-          000
-        </span>
+      <div className="relative h-px bg-bone/15">
+        <span className="pl-bar absolute inset-0 origin-left scale-x-0 bg-bone" />
       </div>
     </div>
   );
