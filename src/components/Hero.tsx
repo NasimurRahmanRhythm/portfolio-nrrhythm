@@ -7,6 +7,16 @@ import SplitTitle from "./SplitTitle";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { onReady } from "@/lib/ready";
 import { site } from "@/lib/site";
+import { getProject } from "@/lib/projects";
+import type { HeroSite } from "./three/HeroScene";
+
+// The live sites floating in the hero, each one a window that opens the site.
+const SITES: HeroSite[] = ["dermasoul", "gallery-hamiduzzaman", "vip-motors", "integrity-360", "football-training"]
+  .map((slug) => getProject(slug))
+  .filter((p) => p?.links.live && p.cover)
+  .map((p) => ({ name: p!.name, url: p!.links.live!, cover: p!.cover! }));
+
+const host = (url: string) => new URL(url).host.replace(/^www\./, "");
 
 const HeroScene = dynamic(() => import("./three/HeroScene"), { ssr: false });
 
@@ -46,6 +56,24 @@ export default function Hero() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const tip = useRef<HTMLDivElement>(null);
+
+  // The label follows the pointer; it is only visible while a window is hovered.
+  useEffect(() => {
+    const move = (e: PointerEvent) => {
+      if (tip.current) tip.current.style.transform = `translate(${e.clientX + 18}px, ${e.clientY + 18}px)`;
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    return () => window.removeEventListener("pointermove", move);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.cursor = hovered === null ? "" : "pointer";
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, [hovered]);
 
   useGSAP(
     () => {
@@ -82,23 +110,51 @@ export default function Hero() {
 
         {mounted && (
           <HeroScene
+            sites={SITES}
             progress={progress}
             dark={resolvedTheme !== "light"}
-            className="pointer-events-none absolute inset-0"
+            hovered={hovered}
+            onHover={setHovered}
+            className="absolute inset-0"
           />
         )}
 
-        <div className="hero-meta pointer-events-none absolute inset-x-0 top-24 z-10 flex justify-between px-[var(--margin)]">
-          <p className="hero-in t-label text-muted">
-            ( Portfolio · {new Date().getFullYear()} )
-          </p>
+        <div
+          ref={tip}
+          aria-hidden="true"
+          className={`t-label pointer-events-none fixed left-0 top-0 z-[120] rounded-full bg-fg px-4 py-2.5 text-bg transition-opacity duration-300 ${
+            hovered === null ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {hovered !== null && SITES[hovered] && (
+            <>
+              {SITES[hovered].name} <span className="text-accent">↗</span>{" "}
+              <span className="opacity-60">{host(SITES[hovered].url)}</span>
+            </>
+          )}
+        </div>
+
+        {/* The canvas can't be tabbed to, so the same sites as plain links. */}
+        <nav aria-label="Live sites" className="sr-only">
+          <ul>
+            {SITES.map((s) => (
+              <li key={s.url}>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="hero-meta pointer-events-none absolute inset-x-0 top-24 z-10 flex justify-end px-[var(--margin)]">
           <p className="hero-in t-label hidden items-center gap-2 text-muted sm:flex">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
             Available for new opportunities
           </p>
         </div>
 
-        <div className="absolute inset-x-0 bottom-[6svh] z-10 px-[var(--margin)]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-[6svh] z-10 px-[var(--margin)]">
           <h1 className="pointer-events-none mb-8 lg:mb-10">
             <span className="hero-l1 block">
               <SplitTitle text="Md. Nasimur" className={LINE} when="ready" />
@@ -119,7 +175,7 @@ export default function Hero() {
               payments and real-time systems to brand-aware GenAI content pipelines.
             </p>
 
-            <div className="hero-in flex flex-wrap gap-3 lg:col-span-2 lg:flex-col lg:items-end">
+            <div className="hero-in pointer-events-auto flex flex-wrap gap-3 lg:col-span-2 lg:flex-col lg:items-end">
               <a
                 href="#projects"
                 className="t-label rounded-full bg-fg px-5 py-3 text-bg transition-colors hover:bg-accent hover:text-bone"

@@ -236,6 +236,7 @@ export const projects: Project[] = [
       source: "https://github.com/NasimurRahmanRhythm/football-training-app",
       extra: [{ label: "Mobile app source", href: "https://github.com/NasimurRahmanRhythm/football-training-app-native" }],
     },
+    cover: "/projects/football-training.jpg",
   },
 ];
 

@@ -4,7 +4,7 @@ import { site } from "./site";
 export const ogSize = { width: 1200, height: 630 };
 
 // Google Fonts serves TTF to clients it doesn't recognise, which is what Satori needs.
-export async function googleFont(query: string) {
+async function googleFont(query: string) {
   try {
     const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${query}`)).text();
     const url = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1];

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import Link from "next/link";
+import Image from "next/image";
 import { useLenis } from "./SmoothScroll";
 import { nav, sectionHref, site, socials } from "@/lib/site";
 
@@ -80,7 +82,17 @@ export default function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between gap-6 px-[var(--margin)] py-4">
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
+          <Link href="/" aria-label={`${site.name}, home`} className="shrink-0 transition-transform hover:scale-105">
+            <Image
+              src="/assets/avatar.png"
+              alt=""
+              width={40}
+              height={40}
+              priority
+              className="h-10 w-10 object-contain"
+            />
+          </Link>
+          <nav className="mr-auto hidden items-center gap-8 md:flex" aria-label="Main">
             {nav.map((link, i) => (
               <a key={link.href} href={sectionHref(pathname, link.href)} className="t-label link-u pb-0.5 text-muted transition-colors hover:text-fg">
                 <span className="text-accent">0{i + 1}</span> {link.name}

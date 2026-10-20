@@ -1,83 +1,90 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type RefObject } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import SceneCanvas from "./SceneCanvas";
 import { gsap } from "@/lib/gsap";
 import { onReady } from "@/lib/ready";
 
 type Progress = RefObject<number>;
-type Palette = { slab: string; line: string; bg: string };
+type Palette = { slab: string; line: string };
+export type HeroSite = { name: string; url: string; cover: string };
 
 const EMBER = "#ff5a1f";
 const SAGE = "#9faf9b";
 
-// Where each window floats, in units of the window width: x, y, depth, scale, turn.
+// Where each browser window floats, in units of the window width: x, y, depth, scale, turn.
+// Two rows of two and one below, so every site stays visible.
 const LAYOUT: [number, number, number, number, number][] = [
-  [0.1, 0.55, 0, 1.1, -0.28],
-  [-0.75, -0.2, -1.1, 0.9, 0.32],
-  [0.85, -0.45, 0.7, 0.8, -0.42],
-  [-0.2, -1.05, 1.2, 0.7, 0.18],
-  [0.95, 1.15, -1.6, 0.75, -0.2],
-  [-0.95, 1.0, -0.6, 0.6, 0.4],
-  [0.35, -1.6, -0.9, 0.55, -0.12],
+  [-0.55, 0.85, 0, 1.0, 0.25],
+  [0.75, 1.0, -0.6, 0.9, -0.25],
+  [-0.75, -0.25, 0.4, 0.95, 0.3],
+  [0.65, -0.1, -0.2, 1.0, -0.3],
+  [0, -1.25, 0.8, 0.85, 0.05],
 ];
 
-// Cheap deterministic noise so every visit draws the same "code".
+// Cheap deterministic noise for the background dust.
 function rand(seed: number) {
   const x = Math.sin(seed * 127.1) * 43758.5453;
   return x - Math.floor(x);
 }
 
-function codeLines(index: number) {
-  const lines: { x: number; y: number; w: number; color: string }[] = [];
-  let y = 0.18;
-  for (let row = 0; row < 7; row++) {
-    const indent = Math.floor(rand(index * 31 + row) * 3) * 0.07;
-    let x = -0.42 + indent;
-    const tokens = 1 + Math.floor(rand(index * 17 + row * 3) * 3);
-    for (let t = 0; t < tokens; t++) {
-      const w = 0.06 + rand(index * 7 + row * 11 + t) * 0.22;
-      if (x + w > 0.44) break;
-      const roll = rand(index * 3 + row * 5 + t * 13);
-      lines.push({ x: x + w / 2, y, w, color: roll > 0.78 ? EMBER : roll > 0.6 ? SAGE : "line" });
-      x += w + 0.03;
-    }
-    y -= 0.075;
-  }
-  return lines;
-}
+/** A browser window showing one site's screenshot. */
+function SiteWindow({
+  site,
+  palette,
+  hovered,
+  onHover,
+}: {
+  site: HeroSite;
+  palette: Palette;
+  hovered: boolean;
+  onHover: (over: boolean) => void;
+}) {
+  const texture = useTexture(site.cover);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const glow = useRef<THREE.Group>(null);
 
-function Window({ index, palette }: { index: number; palette: Palette }) {
-  const lines = useMemo(() => codeLines(index), [index]);
+  useFrame((_, delta) => {
+    const g = glow.current;
+    if (g) g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, hovered ? 1.06 : 1, 8, delta));
+  });
+
+  const open = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    window.open(site.url, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <group>
-      <RoundedBox args={[1, 0.66, 0.035]} radius={0.03} smoothness={4}>
-        <meshStandardMaterial color={palette.slab} roughness={0.55} metalness={0.15} />
+    <group
+      ref={glow}
+      onClick={open}
+      onPointerOver={(e) => (e.stopPropagation(), onHover(true))}
+      onPointerOut={() => onHover(false)}
+    >
+      <RoundedBox args={[1, 0.69, 0.035]} radius={0.03} smoothness={4}>
+        <meshStandardMaterial
+          color={palette.slab}
+          roughness={0.55}
+          metalness={0.15}
+          emissive={EMBER}
+          emissiveIntensity={hovered ? 0.25 : 0}
+        />
       </RoundedBox>
       {/* title bar */}
-      <mesh position={[0, 0.275, 0.019]}>
-        <planeGeometry args={[0.94, 0.002]} />
-        <meshBasicMaterial color={palette.line} transparent opacity={0.25} />
-      </mesh>
       {[EMBER, SAGE, palette.line].map((c, i) => (
-        <mesh key={i} position={[-0.44 + i * 0.035, 0.3, 0.019]}>
-          <circleGeometry args={[0.009, 16]} />
+        <mesh key={i} position={[-0.45 + i * 0.03, 0.31, 0.019]}>
+          <circleGeometry args={[0.008, 16]} />
           <meshBasicMaterial color={c} />
         </mesh>
       ))}
-      {lines.map((l, i) => (
-        <mesh key={i} position={[l.x, l.y, 0.019]}>
-          <planeGeometry args={[l.w, 0.022]} />
-          <meshBasicMaterial
-            color={l.color === "line" ? palette.line : l.color}
-            transparent
-            opacity={l.color === "line" ? 0.55 : 0.95}
-          />
-        </mesh>
-      ))}
+      {/* the site itself, 16:10 like the screenshots */}
+      <mesh position={[0, -0.025, 0.019]}>
+        <planeGeometry args={[0.96, 0.6]} />
+        <meshBasicMaterial map={texture} toneMapped={false} />
+      </mesh>
     </group>
   );
 }
@@ -109,7 +116,19 @@ function Dust({ color, count = 260 }: { color: string; count?: number }) {
   );
 }
 
-function Windows({ progress, palette }: { progress: Progress; palette: Palette }) {
+function Windows({
+  sites,
+  progress,
+  palette,
+  hovered,
+  onHover,
+}: {
+  sites: HeroSite[];
+  progress: Progress;
+  palette: Palette;
+  hovered: number | null;
+  onHover: (index: number | null) => void;
+}) {
   const group = useRef<THREE.Group>(null);
   const items = useRef<(THREE.Group | null)[]>([]);
   const pointer = useRef({ x: 0, y: 0 });
@@ -155,16 +174,23 @@ function Windows({ progress, palette }: { progress: Progress; palette: Palette }
         cy + y * unit * 0.75 - (1 - t) * unit * (2.4 + i * 0.35) + Math.sin(time * 0.6 + i) * unit * 0.04,
         z + p * (2.2 + i * 0.5),
       );
-      item.rotation.y = turn + Math.sin(time * 0.4 + i * 2) * 0.05 + side * p * 0.6;
+      // A hovered window turns to face the visitor.
+      const facing = hovered === i ? 0 : turn + Math.sin(time * 0.4 + i * 2) * 0.05 + side * p * 0.6;
+      item.rotation.y = THREE.MathUtils.damp(item.rotation.y, facing, 6, delta);
       item.rotation.z = Math.sin(time * 0.3 + i) * 0.02;
     });
   });
 
   return (
     <group ref={group}>
-      {LAYOUT.map(([, , , scale], i) => (
-        <group key={i} ref={(el) => void (items.current[i] = el)} scale={unit * scale}>
-          <Window index={i} palette={palette} />
+      {sites.slice(0, LAYOUT.length).map((site, i) => (
+        <group key={site.url} ref={(el) => void (items.current[i] = el)} scale={unit * LAYOUT[i][3]}>
+          <SiteWindow
+            site={site}
+            palette={palette}
+            hovered={hovered === i}
+            onHover={(over) => onHover(over ? i : null)}
+          />
         </group>
       ))}
     </group>
@@ -172,24 +198,30 @@ function Windows({ progress, palette }: { progress: Progress; palette: Palette }
 }
 
 export default function HeroScene({
+  sites,
   progress,
   dark,
+  hovered,
+  onHover,
   className,
 }: {
+  sites: HeroSite[];
   progress: Progress;
   dark: boolean;
+  hovered: number | null;
+  onHover: (index: number | null) => void;
   className?: string;
 }) {
-  const palette: Palette = dark
-    ? { slab: "#1d1a18", line: "#efe9df", bg: "#0f0e0d" }
-    : { slab: "#fbf8f3", line: "#0f0e0d", bg: "#efe9df" };
+  const palette: Palette = dark ? { slab: "#1d1a18", line: "#efe9df" } : { slab: "#fbf8f3", line: "#0f0e0d" };
 
   return (
     <SceneCanvas className={className} camera={{ position: [0, 0, 6], fov: 40 }} gl={{ antialias: true, alpha: true }}>
       <ambientLight intensity={dark ? 0.55 : 1.8} />
       <directionalLight position={[3, 4, 5]} intensity={dark ? 1.4 : 1.1} color="#ffe2c4" />
       <pointLight position={[-3, -1, 3]} intensity={dark ? 14 : 6} color={EMBER} distance={12} />
-      <Windows progress={progress} palette={palette} />
+      <Suspense fallback={null}>
+        <Windows sites={sites} progress={progress} palette={palette} hovered={hovered} onHover={onHover} />
+      </Suspense>
       <Dust color={dark ? "#efe9df" : "#0f0e0d"} />
     </SceneCanvas>
   );
