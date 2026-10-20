@@ -97,6 +97,12 @@
   }
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 ::selection {
   background: var(--accent);
   color: var(--color-bone);

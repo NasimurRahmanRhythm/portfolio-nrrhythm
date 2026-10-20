@@ -10,7 +10,9 @@ import { kriya } from "@/lib/kriya";
 const project = getProject("kriya-ai")!;
 
 export const metadata: Metadata = {
-  title: `${project.title} | Md. Nasimur Rahman`,
+  title: project.title,
+  alternates: { canonical: "/projects/kriya-ai" },
+  openGraph: { type: "article", url: "/projects/kriya-ai", title: project.title, description: project.summary },
   description: project.summary,
 };
 

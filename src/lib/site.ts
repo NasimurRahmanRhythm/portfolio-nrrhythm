@@ -1,9 +1,13 @@
 export const site = {
+  url: "https://portfolio-nrrhythm.vercel.app",
   name: "Md. Nasimur Rahman",
   role: "Software Engineer",
   location: "Dhaka, Bangladesh",
   email: "rhythm4538@gmail.com",
   resume: "/assets/resume.pdf",
+  title: "Md. Nasimur Rahman | Software Engineer",
+  description:
+    "Software Engineer at ShellBeeHaken building full-stack products with React, Next.js and Node.js: brand-aware GenAI content pipelines, payments, real-time systems and scroll-driven 3D web experiences.",
 };
 
 export const socials = [

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 import { onReady } from "@/lib/ready";
 
 type Props = {
@@ -19,6 +19,7 @@ export default function SplitTitle({ text, className = "", when = "scroll", dela
   useGSAP(
     () => {
       const chars = gsap.utils.toArray<HTMLElement>(".split-char", root.current);
+      if (prefersReducedMotion()) return;
       gsap.set(chars, { yPercent: 115 });
 
       const tween = gsap.to(chars, {

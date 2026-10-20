@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/gsap";
 
 type Props = {
   children: React.ReactNode;
@@ -18,6 +18,7 @@ export default function Reveal({ children, className = "", stagger = 0.08, as: T
   useGSAP(
     () => {
       const items = Array.from(root.current!.children);
+      if (prefersReducedMotion()) return;
       gsap.set(items, { y: 40, opacity: 0 });
       const io = new IntersectionObserver(
         ([entry]) => {

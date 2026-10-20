@@ -19,7 +19,12 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = getProject((await params).slug);
   if (!project) return {};
-  return { title: `${project.title} | Md. Nasimur Rahman`, description: project.summary };
+  return {
+    title: project.title,
+    description: project.summary,
+    alternates: { canonical: `/projects/${project.slug}` },
+    openGraph: { type: "article", url: `/projects/${project.slug}`, title: project.title, description: project.summary },
+  };
 }
 
 export default async function ProjectPage({ params }: Props) {
